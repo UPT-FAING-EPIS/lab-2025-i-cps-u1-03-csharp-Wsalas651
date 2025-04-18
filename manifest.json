@@ -1,5 +1,5 @@
 {
-  "source_base_path": "C:/Users/ASUS/Documents/CALIDAD/lab-2025-i-cps-u1-03-csharp-Wsalas651/Bank",
+  "source_base_path": "/home/runner/work/lab-2025-i-cps-u1-03-csharp-Wsalas651/lab-2025-i-cps-u1-03-csharp-Wsalas651/Bank",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -110,11 +110,11 @@
       "type": "Toc",
       "source_relative_path": "docs/toc.yml",
       "output": {
-        ".html": {
-          "relative_path": "docs/toc.html"
-        },
         ".json": {
           "relative_path": "docs/toc.json"
+        },
+        ".html": {
+          "relative_path": "docs/toc.html"
         }
       },
       "version": ""
@@ -133,11 +133,11 @@
       "type": "Toc",
       "source_relative_path": "toc.yml",
       "output": {
-        ".html": {
-          "relative_path": "toc.html"
-        },
         ".json": {
           "relative_path": "toc.json"
+        },
+        ".html": {
+          "relative_path": "toc.html"
         }
       },
       "version": ""
