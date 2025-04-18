@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis; // <- Asegúrate de incluir este using
+
 namespace Bank.WebApi.Models
 {
     public class BankAccount
@@ -6,6 +8,7 @@ namespace Bank.WebApi.Models
         private double m_balance;
 
         // Constructor privado requerido por algunos frameworks
+        [ExcludeFromCodeCoverage] // <- Esto excluye este constructor del análisis de cobertura
         private BankAccount()
         {
             m_customerName = string.Empty; // Evita advertencia CS8618
@@ -20,6 +23,7 @@ namespace Bank.WebApi.Models
         }
 
         public string CustomerName => m_customerName;
+
         public double Balance => m_balance;
 
         public void Debit(double amount)
@@ -36,3 +40,4 @@ namespace Bank.WebApi.Models
         }
     }
 }
+
