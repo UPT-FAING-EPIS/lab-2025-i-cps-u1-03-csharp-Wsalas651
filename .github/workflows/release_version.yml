@@ -1,0 +1,64 @@
+name: Release Version
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_VERSION: '8.0'
+      SOLUTION_PATH: 'Bank/Bank.sln'
+      PROJECT_PATH: 'Bank/Bank.WebApi/Bank.WebApi.csproj'
+      OUTPUT_PATH: './nupkg'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore build
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Build solution in Release mode
+        run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
+
+      #- name: Run unit tests
+        #run: dotnet test Bank/Bank.Tests/Bank.Tests.csproj --no-build --verbosity normal
+
+      - name: Pack NuGet package for release
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.OUTPUT_PATH }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Detect .nupkg file and extract name
+        id: detect_nupkg
+        run: |
+          file=$(find ${{ env.OUTPUT_PATH }} -name "*.nupkg" | head -n 1)
+          echo "file_path=$file" >> $GITHUB_OUTPUT
+          echo "file_name=$(basename $file)" >> $GITHUB_OUTPUT
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.detect_nupkg.outputs.file_path }}
+          asset_name: ${{ steps.detect_nupkg.outputs.file_name }}
+          asset_content_type: application/octet-stream
