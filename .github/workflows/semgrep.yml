@@ -43,7 +43,7 @@ jobs:
 
       # Subir el HTML como artefacto (opcional, útil si quieres verlo desde la pestaña de Actions)
       - name: Upload HTML report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: semgrep-report
           path: report/semgrep-report.html
