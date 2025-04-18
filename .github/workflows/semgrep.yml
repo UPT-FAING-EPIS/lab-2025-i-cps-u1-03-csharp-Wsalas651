@@ -1,5 +1,9 @@
 name: Convert semgrep.json to HTML
-'on': push
+on:
+    push:
+      branches:
+        - main
+  
 permissions:
   checks: write
   actions: read
@@ -33,7 +37,7 @@ jobs:
           for r in data.get('results', []):
               rows.append(f'<tr><td>{html.escape(r.get(\"path\", \"\"))}</td><td>{r.get(\"start\", {}).get(\"line\", \"\")}</td><td>{html.escape(r.get(\"check_id\", \"\"))}</td><td>{html.escape(r.get(\"extra\", {}).get(\"severity\", \"\"))}</td><td>{html.escape(r.get(\"extra\", {}).get(\"message\", \"\"))}</td></tr>')
           html_out = '<html><head><title>Semgrep Report</title></head><body><h1>Semgrep Report</h1><table border=1><tr><th>Archivo</th><th>Línea</th><th>Regla</th><th>Severidad</th><th>Mensaje</th></tr>' + ''.join(rows) + '</table></body></html>'
-          open('semgrep-report.html', 'w').write(html_out)
+          open('report/semgrep-report.html', 'w').write(html_out)
           " > semgrep_to_html.py
           python semgrep_to_html.py
 
@@ -42,13 +46,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: semgrep-report
-          path: semgrep-report.html
+          path: report/semgrep-report.html
 
       # Publicar en GitHub Pages
       - name: Deploy HTML to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./report
           publish_branch: gh-pages
-          keep_files: true
