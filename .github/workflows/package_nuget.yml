@@ -14,7 +14,7 @@ permissions:
   contents: write
   checks: write
   actions: write
-  packages: write  # Añadido permiso para paquetes
+  packages: write  # Añadido permiso para paquetes de GH
 
 jobs:
   sonarqube:
