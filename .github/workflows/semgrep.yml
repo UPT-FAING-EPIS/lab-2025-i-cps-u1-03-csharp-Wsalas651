@@ -27,6 +27,8 @@ jobs:
       - name: Run Semgrep scan
         run: semgrep --config auto --json > semgrep.json
 
+      # prospector-html is used for generating reports, but I will use Python for this, because prospector-html is discontinued
+
       # Convertir JSON a HTML usando un script Python embebido
       - name: Convert semgrep.json to HTML
         run: |
