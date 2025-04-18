@@ -1,0 +1,54 @@
+name: Convert semgrep.json to HTML
+'on': push
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep scan
+        run: semgrep --config auto --json > semgrep.json
+
+      # Convertir JSON a HTML usando un script Python embebido
+      - name: Convert semgrep.json to HTML
+        run: |
+          echo "
+          import json, html
+          data = json.load(open('semgrep.json'))
+          rows = []
+          for r in data.get('results', []):
+              rows.append(f'<tr><td>{html.escape(r.get(\"path\", \"\"))}</td><td>{r.get(\"start\", {}).get(\"line\", \"\")}</td><td>{html.escape(r.get(\"check_id\", \"\"))}</td><td>{html.escape(r.get(\"extra\", {}).get(\"severity\", \"\"))}</td><td>{html.escape(r.get(\"extra\", {}).get(\"message\", \"\"))}</td></tr>')
+          html_out = '<html><head><title>Semgrep Report</title></head><body><h1>Semgrep Report</h1><table border=1><tr><th>Archivo</th><th>Línea</th><th>Regla</th><th>Severidad</th><th>Mensaje</th></tr>' + ''.join(rows) + '</table></body></html>'
+          open('semgrep-report.html', 'w').write(html_out)
+          " > semgrep_to_html.py
+          python semgrep_to_html.py
+
+      # Subir el HTML como artefacto (opcional, útil si quieres verlo desde la pestaña de Actions)
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: semgrep-report
+          path: semgrep-report.html
+
+      # Publicar en GitHub Pages
+      - name: Deploy HTML to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          keep_files: true
